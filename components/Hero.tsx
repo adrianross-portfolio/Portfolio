@@ -76,7 +76,7 @@ export default function Hero() {
                 md:text-4xl
               "
             >
-              Mark Kenneth Gatdula
+              Adrian Ross Austria
             </motion.h1>
 
             {/* DESCRIPTION */}
