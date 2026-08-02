@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* -------------------------
+   THEME TOKENS
+------------------------- */
+:root {
+  color-scheme: light;
+  
+
+  /* LIGHT MODE (soft warm off-white) */
+  --bg: #f4f3ee;
+  --surface: #ffffff;
+
+  /* text hierarchy */
+  --text: #151513;
+  --muted: #5c5a55;
+
+  /* ultra subtle border (better than rgba hard edges) */
+  --border: rgba(21, 21, 19, 0.06);
+
+  /* accent */
+--accent: #d97706;
+--accent-2: #ec4899;
+--accent-soft: rgba(139, 92, 246, 0.15);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: #151513;
+  --surface: #1c1c19;
+
+  --text: #f5f5f4;
+  --muted: #a8a29e;
+
+  --border: rgba(245, 245, 244, 0.07);
+
+  --accent: #f59e0b;
+  --accent-2: #f472b6;
+  --accent-soft: rgba(167, 139, 250, 0.15);
+}
+
+/* -------------------------
+   BASE
+------------------------- */
+html {
+/* } */}
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+
+  transition:
+    background 300ms ease,
+    color 300ms ease;
+}
+
+/* -------------------------
+   SELECTION
+------------------------- */
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* -------------------------
+   UTILITIES (IMPORTANT)
+------------------------- */
+
+/* surfaces / cards */
+.bg-surface {
+  background: var(--surface);
+}
+
+/* text helpers */
+.text-muted {
+  color: var(--muted);
+}
+
+/* border helper (use this everywhere) */
+.border-soft {
+  border: 1px solid var(--border);
+}
+
+/* optional nicer card system */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.dark .card {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.accent-glow {
+  background: var(--accent-soft);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
+}
+
+html, body {
+  height: auto;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
