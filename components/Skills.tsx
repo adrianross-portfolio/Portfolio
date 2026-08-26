@@ -149,7 +149,7 @@ export default function Skills() {
             MY
           </h2>
           <h2 className="font-black tracking-tight text-[color:var(--accent)] text-4xl sm:text-5xl md:text-7xl lg:text-8xl -mt-1 md:-mt-2">
-            TOOLKIT
+            PALITAN MO TO
           </h2>
         </div>
 
