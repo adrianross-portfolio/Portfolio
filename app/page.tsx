@@ -6,6 +6,7 @@ import Contact from "@/components/Contact";
 import SideNav from "@/components/SideNav";
 import Footer from "@/components/footer";
 import BulbToggle from "@/components/BulbToggle";
+import Test from "@/components/Test";
 
 export default function Home() {
   return (
@@ -86,10 +87,12 @@ export default function Home() {
           pb-24
         "
       >
+        
         <About />
         <Skills />
         <Projects />
-        <Contact />
+        <Contact /> 
+        
       </section>
     </main>
   );

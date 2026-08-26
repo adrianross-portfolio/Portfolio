@@ -55,10 +55,17 @@ export default function Hero() {
                 "
               >
                 <img
-                  src="/prof.png"
-                  alt="Profile"
-                  className="w-full h-full object-contain"
-                />
+  src="/Adrian Pic.jpeg"
+  alt="Profile"
+  className="
+    w-full
+    h-[150px]
+    sm:h-[350px]
+    md:h-[450px]
+    lg:h-[290px]
+    object-cover
+  "
+/>
               </div>
             </div>
 
@@ -97,8 +104,7 @@ export default function Hero() {
                 text-[color:var(--muted)]
               "
             >
-              A Full Stack Developer passionate about building innovative,
-              scalable, and user-focused digital solutions.
+              Versatile professional with hands-on experience supporting international sporting events, including FIBA, FIFA, the Southeast Asian Games, and other major sporting competitions
             </p>
 
             {/* FOOTER */}

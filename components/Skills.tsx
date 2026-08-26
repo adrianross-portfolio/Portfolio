@@ -27,6 +27,8 @@ import {
   OpenaiIcon,
   GoogleGemini,
   Graphql,
+  MicrosoftIcon,
+  MetaIcon,
 } from "@dev.icons/react";
 
 const tabs = [
@@ -39,11 +41,11 @@ const tabs = [
 const skills = {
   frontend: [
     {
-      name: "Vue.js",
+      name: "Microsoft.js",
       description: "Progressive JavaScript Framework",
-      icon: _Vue,
+      icon: MicrosoftIcon,
     },
-    { name: "Next.js", description: "React Framework", icon: NextjsIcon },
+    { name: "Facebook", description: "React Framework", icon: MetaIcon },
     { name: "React", description: "UI Library", icon: _React },
     {
       name: "TypeScript",

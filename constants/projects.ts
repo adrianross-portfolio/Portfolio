@@ -153,4 +153,19 @@ export const projects: Project[] = [
     hasModal: true,
     stack: ["Next.js", "TypeScript", "TailwindCSS", "React", "Supabase"],
   },
+  {
+    id: "RossSneaker",
+    title: "Ross Sneaker",
+    description:
+      "A digital appointment system that helps healthcare facilities manage patients, consultations, schedules, and provider assignments in one secure and organized platform.",
+    date: "2026",
+    jobType: "Freelance",
+    image: [
+      "/medisync/med-1.png",
+      "/medisync/med-2.png",
+      "/medisync/med-3.png",
+    ],
+    hasModal: true,
+    stack: ["Next.js", "TypeScript", "TailwindCSS", "React", "Supabase"],
+  },
 ];

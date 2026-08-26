@@ -91,7 +91,7 @@ export default function About() {
         {/* HEADING */}
         <div>
           <h2 className="font-black tracking-tight text-[color:var(--text)] text-4xl sm:text-5xl md:text-6xl lg:text-8xl">
-            FULL STACK
+            SPORT ENTHUSIAST
           </h2>
 
           <h2 className="font-black tracking-tight text-[color:var(--accent)] text-4xl sm:text-5xl md:text-6xl lg:text-8xl -mt-1 md:-mt-2">
@@ -101,8 +101,7 @@ export default function About() {
 
         {/* DESCRIPTION */}
         <p className="mt-6 md:mt-8 max-w-2xl text-base md:text-lg leading-relaxed text-[color:var(--muted)]">
-          Passionate about creating intuitive and engaging user experiences.
-          Specializing in transforming ideas into beautifully crafted products.
+          Skilled in stakeholder coordination, creative problem-solving, and digital tools, with a passion for using creativity and organization to support teams, projects, and organizations.
         </p>
 
         {/* STATS */}
