@@ -9,6 +9,10 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
+        transition={{
+          duration: 0.6,
+          ease: "easeOut",
+        }}
         className="w-full max-w-4xl"
       >
         <motion.div
@@ -17,6 +21,8 @@ export default function Hero() {
             overflow-hidden
             rounded-2xl
             bg-[color:var(--surface)]
+            border
+            border-[color:var(--border-soft-color)]
             shadow-2xl
 
             p-6
@@ -40,32 +46,36 @@ export default function Hero() {
         >
           <div className="relative z-10">
             {/* IMAGE */}
-            <div className="flex justify-center mb-6">
+            <div className="mb-6 flex justify-center sm:mb-8">
               <div
                 className="
-                  w-40 h-40
-                  sm:w-52 sm:h-52
-                  md:w-64 md:h-64
-                  lg:w-72 lg:h-72
+                  h-40
+                  w-40
 
-                  rounded-lg
                   overflow-hidden
+                  rounded-lg
+                  bg-[color:var(--brand-accent-soft)]
                   shadow-lg
-                  bg-[color:var(--muted)]/20
+
+                  sm:h-52
+                  sm:w-52
+
+                  md:h-64
+                  md:w-64
+
+                  lg:h-72
+                  lg:w-72
                 "
               >
                 <img
-  src="/Adrian Pic.jpeg"
-  alt="Profile"
-  className="
-    w-full
-    h-[150px]
-    sm:h-[350px]
-    md:h-[450px]
-    lg:h-[290px]
-    object-cover
-  "
-/>
+                  src="/Adrian Pic.jpeg"
+                  alt="Adrian Ross Austria"
+                  className="
+                    h-full
+                    w-full
+                    object-cover
+                  "
+                />
               </div>
             </div>
 
@@ -73,42 +83,50 @@ export default function Hero() {
             <motion.h1
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.15,
+                duration: 0.5,
+              }}
               className="
                 text-center
-                font-bold
-                text-[color:var(--text)]
-
                 text-2xl
+                font-bold
+                tracking-tight
+
                 sm:text-3xl
                 md:text-4xl
               "
             >
-              Adrian Ross Austria
+              <span className="text-[color:var(--text)]">Adrian Ross </span>
+
+              <span className="text-[color:var(--text)]">Austria</span>
             </motion.h1>
 
             {/* DESCRIPTION */}
             <p
               className="
-                mt-4
-                sm:mt-6
-
-                max-w-xl
                 mx-auto
+                mt-4
+                max-w-xl
                 text-center
 
                 text-sm
-                sm:text-base
-                md:text-lg
-
                 leading-relaxed
-                text-[color:var(--muted)]
+                text-[color:var(--text)]
+
+                sm:mt-6
+                sm:text-base
+
+                md:text-lg
               "
             >
-              Versatile professional with hands-on experience supporting international sporting events, including FIBA, FIFA, the Southeast Asian Games, and other major sporting competitions
+              Versatile professional with hands-on experience supporting
+              international sporting events, including FIBA, FIFA, the Southeast
+              Asian Games, and other major sporting competitions.
             </p>
 
             {/* FOOTER */}
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center sm:mt-8">
               <Footer />
             </div>
           </div>
