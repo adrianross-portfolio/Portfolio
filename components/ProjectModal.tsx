@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+
 import {
   SiNextdotjs,
   SiReact,
@@ -22,6 +23,7 @@ import {
   SiDocker,
   SiSupabase,
 } from "react-icons/si";
+
 import type { Project } from "@/constants/projects";
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
@@ -30,6 +32,10 @@ type Props = {
   project: Project | null;
   onClose: () => void;
 };
+
+/* =========================================================
+   STACK ICONS
+========================================================= */
 
 const stackIcons: Record<string, ReactElement> = {
   "Next.js": <SiNextdotjs size={14} />,
@@ -55,31 +61,43 @@ const stackIcons: Record<string, ReactElement> = {
 export default function ProjectModal({ project, onClose }: Props) {
   const [currentImage, setCurrentImage] = useState(0);
 
+  /* =========================================================
+     LOCK BODY SCROLL
+  ========================================================= */
+
   useEffect(() => {
     if (!project) return;
 
-    const original = document.body.style.overflow;
+    const originalOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
+
     setCurrentImage(0);
 
     return () => {
-      document.body.style.overflow = original;
+      document.body.style.overflow = originalOverflow;
     };
   }, [project]);
+
+  /* =========================================================
+     KEYBOARD CONTROLS
+  ========================================================= */
 
   useEffect(() => {
     if (!project) return;
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
 
-      if (e.key === "ArrowLeft" && project.image?.length > 1) {
+      if (event.key === "ArrowLeft" && project.image?.length > 1) {
         setCurrentImage((prev) =>
           prev === 0 ? project.image.length - 1 : prev - 1,
         );
       }
 
-      if (e.key === "ArrowRight" && project.image?.length > 1) {
+      if (event.key === "ArrowRight" && project.image?.length > 1) {
         setCurrentImage((prev) =>
           prev === project.image.length - 1 ? 0 : prev + 1,
         );
@@ -88,112 +106,238 @@ export default function ProjectModal({ project, onClose }: Props) {
 
     window.addEventListener("keydown", handleKeyDown);
 
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [project, onClose]);
 
   return (
     <AnimatePresence>
       {project && (
         <>
-          {/* BACKDROP */}
+          {/* =================================================
+              BACKDROP
+          ================================================= */}
+
           <motion.div
-            className="fixed inset-0 z-[9998] h-full backdrop-blur-md bg-black/40 dark:bg-black/75"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="
+              fixed
+              inset-0
+              z-[9998]
+
+              h-full
+
+              bg-black/50
+              backdrop-blur-md
+            "
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
             onClick={onClose}
           />
 
-          {/* STAGE */}
+          {/* =================================================
+              STAGE
+          ================================================= */}
+
           <motion.div
             className="
-              fixed inset-0 z-[9999]
-              flex items-end sm:items-center justify-center
-              p-0 sm:p-4
+              fixed
+              inset-0
+              z-[9999]
+
+              flex
+              items-end
+              justify-center
+
+              sm:items-center
+
+              p-0
+              sm:p-4
+
               pt-[env(safe-area-inset-top)]
               pb-[env(safe-area-inset-bottom)]
             "
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
           >
+            {/* =================================================
+                CLOSE BUTTON
+            ================================================= */}
+
             <button
+              type="button"
               aria-label="Close modal"
               onClick={onClose}
               className="
                 absolute
-                top-[calc(env(safe-area-inset-top)+12px)]
+
                 right-4
+                top-[calc(env(safe-area-inset-top)+12px)]
+
                 z-[100]
-                h-12 w-12
-                flex items-center justify-center
+
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+
                 rounded-full
-                bg-black/70 text-white
-                backdrop-blur-md
+
+                border
+                border-white/10
+
+                bg-black/60
+
+                text-white
+
                 shadow-lg
+                backdrop-blur-md
+
+                transition-all
+                duration-200
+
+                hover:bg-[color:var(--brand-accent)]
+                hover:border-[color:var(--brand-accent)]
+
+                active:scale-95
               "
             >
               <X size={22} />
             </button>
-            {/* MODAL */}
+
+            {/* =================================================
+                MODAL
+            ================================================= */}
+
             <motion.div
               className="
                 relative
-                w-full sm:w-[95vw] sm:max-w-5xl
-                h-[100dvh] sm:h-auto
-                sm:min-h-[80vh] sm:max-h-[92vh]
-                rounded-none sm:rounded-3xl
-                overflow-hidden
-                pt-16 sm:pt-0
-                backdrop-blur-2xl
-                shadow-2xl
-                flex flex-col
 
-                bg-white/90
-                dark:bg-zinc-900/90
+                flex
+                w-full
+                flex-col
+
+                overflow-hidden
+
+                rounded-none
 
                 border
-                border-zinc-200
-                dark:border-zinc-800
+                border-[color:var(--border-soft-color)]
 
-                transition-colors duration-300
+                bg-[color:var(--surface)]
+
+                shadow-2xl
+
+                pt-16
+
+                backdrop-blur-2xl
+
+                h-[100dvh]
+
+                sm:h-auto
+                sm:min-h-[80vh]
+                sm:max-h-[92vh]
+                sm:w-[95vw]
+                sm:max-w-5xl
+                sm:rounded-3xl
+                sm:pt-0
+
+                transition-colors
+                duration-300
               "
-              initial={{ scale: 0.96, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.96, opacity: 0 }}
+              initial={{
+                scale: 0.96,
+                opacity: 0,
+              }}
+              animate={{
+                scale: 1,
+                opacity: 1,
+              }}
+              exit={{
+                scale: 0.96,
+                opacity: 0,
+              }}
             >
-              {/* IMAGE */}
-              <div className="relative flex-[0.45] sm:flex-[0.55] overflow-hidden">
+              {/* =================================================
+                  IMAGE
+              ================================================= */}
+
+              <div
+                className="
+                  relative
+                  flex-[0.45]
+                  overflow-hidden
+
+                  sm:flex-[0.55]
+                "
+              >
                 {project.image?.length > 0 && (
                   <AnimatePresence mode="wait">
                     <motion.img
                       draggable={false}
                       key={currentImage}
                       src={project.image[currentImage]}
-                      className="h-full w-full object-cover"
-                      initial={{ opacity: 0, scale: 1.03 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.25 }}
+                      alt={project.title}
+                      className="
+                        h-full
+                        w-full
+                        object-cover
+                      "
+                      initial={{
+                        opacity: 0,
+                        scale: 1.03,
+                      }}
+                      animate={{
+                        opacity: 1,
+                        scale: 1,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        scale: 0.98,
+                      }}
+                      transition={{
+                        duration: 0.25,
+                      }}
                     />
                   </AnimatePresence>
                 )}
 
+                {/* IMAGE OVERLAY */}
+
                 <div
                   className="
-                    absolute inset-0
+                    absolute
+                    inset-0
+
                     bg-gradient-to-t
                     from-black/60
                     via-black/10
                     to-transparent
-                    dark:from-black/80
-                    dark:via-black/30
                   "
                 />
 
-                {/* PREV */}
+                {/* =================================================
+                    PREVIOUS
+                ================================================= */}
+
                 {project.image?.length > 1 && (
                   <button
+                    type="button"
                     aria-label="Previous image"
                     onClick={() =>
                       setCurrentImage(
@@ -203,24 +347,49 @@ export default function ProjectModal({ project, onClose }: Props) {
                       )
                     }
                     className="
-                      absolute left-2 sm:left-4 top-1/2 -translate-y-1/2
-                      h-8 w-8 sm:h-10 sm:w-10
+                      absolute
+                      left-2
+                      top-1/2
+
+                      flex
+                      h-8
+                      w-8
+                      -translate-y-1/2
+                      items-center
+                      justify-center
+
                       rounded-full
-                      flex items-center justify-center
+
+                      border
+                      border-white/10
+
+                      bg-black/30
+
                       text-white
+
                       backdrop-blur-md
-                      bg-white/15
-                      hover:bg-white/25
-                      transition-colors
+
+                      transition-all
+                      duration-200
+
+                      hover:bg-[color:var(--brand-accent)]
+
+                      sm:left-4
+                      sm:h-10
+                      sm:w-10
                     "
                   >
                     <ChevronLeft size={18} />
                   </button>
                 )}
 
-                {/* NEXT */}
+                {/* =================================================
+                    NEXT
+                ================================================= */}
+
                 {project.image?.length > 1 && (
                   <button
+                    type="button"
                     aria-label="Next image"
                     onClick={() =>
                       setCurrentImage(
@@ -230,111 +399,206 @@ export default function ProjectModal({ project, onClose }: Props) {
                       )
                     }
                     className="
-                      absolute right-2 sm:right-4 top-1/2 -translate-y-1/2
-                      h-8 w-8 sm:h-10 sm:w-10
+                      absolute
+                      right-2
+                      top-1/2
+
+                      flex
+                      h-8
+                      w-8
+                      -translate-y-1/2
+                      items-center
+                      justify-center
+
                       rounded-full
-                      flex items-center justify-center
+
+                      border
+                      border-white/10
+
+                      bg-black/30
+
                       text-white
+
                       backdrop-blur-md
-                      bg-white/15
-                      hover:bg-white/25
-                      transition-colors
+
+                      transition-all
+                      duration-200
+
+                      hover:bg-[color:var(--brand-accent)]
+
+                      sm:right-4
+                      sm:h-10
+                      sm:w-10
                     "
                   >
                     <ChevronRight size={18} />
                   </button>
                 )}
 
-                {/* DOTS */}
+                {/* =================================================
+                    DOTS
+                ================================================= */}
+
                 {project.image?.length > 1 && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                  <div
+                    className="
+                      absolute
+                      bottom-3
+                      left-1/2
+
+                      flex
+                      -translate-x-1/2
+                      gap-2
+                    "
+                  >
                     {project.image.map((_, index) => (
                       <button
+                        type="button"
                         key={index}
+                        aria-label={`Go to image ${index + 1}`}
                         onClick={() => setCurrentImage(index)}
-                        className={`h-2 rounded-full transition-all ${
-                          currentImage === index
-                            ? "w-6 bg-white"
-                            : "w-2 bg-white/50"
-                        }`}
+                        className={`
+                          h-2
+                          rounded-full
+
+                          transition-all
+                          duration-200
+
+                          ${
+                            currentImage === index
+                              ? "w-6 bg-white"
+                              : "w-2 bg-white/50 hover:bg-white/80"
+                          }
+                        `}
                       />
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* CONTENT */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-8">
+              {/* =================================================
+                  CONTENT
+              ================================================= */}
+
+              <div
+                className="
+                  flex-1
+                  overflow-y-auto
+
+                  p-4
+
+                  sm:p-8
+                "
+              >
+                {/* TITLE */}
+
                 <h2
                   className="
-                    text-xl sm:text-3xl
+                    text-xl
                     font-bold
-                    text-zinc-900
-                    dark:text-white
-                    transition-colors duration-300
+                    tracking-tight
+
+                    text-[color:var(--text)]
+
+                    sm:text-3xl
                   "
                 >
                   {project.title}
                 </h2>
 
+                {/* META */}
+
                 <div
                   className="
                     mt-2
-                    text-xs sm:text-sm
-                    flex gap-2
-                    text-zinc-500
-                    dark:text-zinc-400
-                    transition-colors duration-300
+
+                    flex
+                    gap-2
+
+                    text-xs
+                    text-[color:var(--text)]
+
+                    sm:text-sm
                   "
                 >
-                  <span>{project.date}</span>
-                  <span>•</span>
-                  <span>{project.jobType}</span>
+                  {project.date && <span>{project.date}</span>}
+
+                  {project.date && project.jobType && <span>•</span>}
+
+                  {project.jobType && <span>{project.jobType}</span>}
                 </div>
 
-                {/* STACK */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {project.stack?.map((tech) => (
-                    <div
-                      key={tech}
-                      className="
-                        flex items-center gap-2
-                        px-3 py-1.5
-                        text-xs
-                        rounded-full
-                        border
+                {/* =================================================
+                    STACK
+                ================================================= */}
 
-                        transition-all duration-200
+                {project.stack?.length > 0 && (
+                  <div
+                    className="
+                      mt-4
 
-                        bg-zinc-100
-                        border-zinc-200
-                        text-zinc-700
-                        hover:bg-zinc-200
+                      flex
+                      flex-wrap
+                      gap-2
+                    "
+                  >
+                    {project.stack.map((tech) => (
+                      <div
+                        key={tech}
+                        className="
+                          flex
+                          items-center
+                          gap-2
 
-                        dark:bg-zinc-800
-                        dark:border-zinc-700
-                        dark:text-zinc-200
-                        dark:hover:bg-zinc-700
-                      "
-                    >
-                      {stackIcons[tech]}
-                      {tech}
-                    </div>
-                  ))}
-                </div>
+                          rounded-full
+
+                          border
+                          border-[color:var(--border-soft-color)]
+
+                          bg-[color:var(--bg)]
+
+                          px-3
+                          py-1.5
+
+                          text-xs
+                          text-[color:var(--text)]
+
+                          transition-all
+                          duration-200
+
+                          hover:border-[color:var(--brand-accent)]
+                          hover:bg-[color:var(--brand-accent-soft)]
+                          hover:text-[color:var(--brand-accent)]
+                        "
+                      >
+                        {stackIcons[tech]}
+
+                        <span>{tech}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* DESCRIPTION */}
 
                 <p
                   className="
                     mt-6
-                    text-sm sm:text-base
+
+                    text-sm
                     leading-relaxed
-                    text-zinc-600
-                    dark:text-zinc-300
-                    transition-colors duration-300
+
+                    text-[color:var(--text)]
+
+                    sm:text-base
                   "
                 >
                   {project.description}
                 </p>
+
+                {/* =================================================
+                    LIVE URL
+                ================================================= */}
 
                 {project.liveUrl && (
                   <div className="mt-6">
@@ -343,14 +607,29 @@ export default function ProjectModal({ project, onClose }: Props) {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="
-                        inline-flex items-center gap-2
-                        px-4 py-2
+                        inline-flex
+                        items-center
+                        gap-2
+
                         rounded-xl
+
+                        bg-[color:var(--brand-accent)]
+
+                        px-4
+                        py-2
+
+                        font-medium
                         text-white
-                        bg-blue-600
-                        hover:bg-blue-700
-                        transition-all duration-200
+
+                        shadow-sm
+
+                        transition-all
+                        duration-200
+
+                        hover:bg-[color:var(--brand-accent-hover)]
                         hover:scale-[1.02]
+
+                        active:scale-[0.98]
                       "
                     >
                       <ExternalLink size={16} />

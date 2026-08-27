@@ -11,22 +11,29 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import emailjs from "@emailjs/browser";
 
-/* -------------------------
+/* =========================================================
    VALIDATION
---------------------------*/
+========================================================= */
+
 const schema = z.object({
   name: z.string().min(2, "Name is too short"),
+
   email: z.string().email("Invalid email address"),
+
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
 
 export default function Contact() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { margin: "-100px" });
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  const isInView = useInView(sectionRef, {
+    margin: "-100px",
+  });
 
   const controls = useAnimation();
+
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -39,10 +46,17 @@ export default function Contact() {
     resolver: zodResolver(schema),
   });
 
+  /* =========================================================
+     SECTION ANIMATION
+  ========================================================= */
+
   useEffect(() => {
     if (!isInView) return;
 
-    controls.set({ y: -50, opacity: 0 });
+    controls.set({
+      y: -50,
+      opacity: 0,
+    });
 
     controls.start({
       y: 0,
@@ -53,6 +67,10 @@ export default function Contact() {
       },
     });
   }, [isInView, controls]);
+
+  /* =========================================================
+     SUBMIT
+  ========================================================= */
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
@@ -71,8 +89,12 @@ export default function Contact() {
       );
 
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+
       reset();
+
+      setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error("Email send failed:", error);
     } finally {
@@ -89,209 +111,495 @@ export default function Contact() {
     >
       <motion.div
         className="
-          relative z-10
+          relative
+          z-10
 
-          min-h-auto
-          lg:min-h-[calc(100vh-5rem)]
-
-          max-w-7xl
           mx-auto
 
+          flex
+          min-h-0
+          flex-col
+
+          max-w-7xl
+
+          rounded-2xl
+
+          border
+          border-[color:var(--border-soft-color)]
+
           bg-[color:var(--surface)]
+
           text-[color:var(--text)]
 
+          shadow-2xl
           backdrop-blur-md
-          border border-[color:var(--border)]
-          rounded-2xl shadow-2xl
 
-          px-5 sm:px-8 md:px-12
-          py-12 sm:py-16 md:py-20
+          px-5
+          py-12
 
-          flex flex-col
+          sm:px-8
+          sm:py-16
+
+          md:px-12
+          md:py-20
+
+          lg:min-h-[calc(100vh-5rem)]
         "
       >
-        {/* HEADER */}
+        {/* =====================================================
+            HEADER
+        ===================================================== */}
+
         <div>
-          <h2 className="font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl tracking-tight">
+          <h2
+            className="
+              font-black
+              tracking-tight
+
+              text-4xl
+              text-[color:var(--text)]
+
+              sm:text-5xl
+              md:text-7xl
+              lg:text-8xl
+            "
+          >
             LET&apos;S WORK
           </h2>
 
-          <h2 className="font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl text-[color:var(--accent)]">
+          <h2
+            className="
+              -mt-1
+
+              font-black
+              tracking-tight
+
+              text-4xl
+              text-[color:var(--brand-accent)]
+
+              sm:text-5xl
+              md:-mt-2
+              md:text-7xl
+              lg:text-8xl
+            "
+          >
             TOGETHER
           </h2>
         </div>
 
-        {/* FORM */}
-        <div className="max-w-2xl mx-auto w-full mt-8 md:mt-10">
+        {/* =====================================================
+            FORM
+        ===================================================== */}
+
+        <div
+          className="
+            mx-auto
+            mt-8
+            w-full
+            max-w-2xl
+
+            md:mt-10
+          "
+        >
           <form
-            className="space-y-5 md:space-y-6"
             onSubmit={handleSubmit(onSubmit)}
+            className="space-y-5 md:space-y-6"
           >
-            {/* NAME */}
+            {/* =================================================
+                NAME
+            ================================================= */}
+
             <div className="relative">
               <input
                 {...register("name")}
                 id="name"
+                type="text"
                 placeholder=" "
-                className="
-                  peer w-full
-                  bg-transparent
-                  border border-[color:var(--border)]
+                autoComplete="name"
+                aria-invalid={Boolean(errors.name)}
+                className={`
+                  peer
+
+                  w-full
+
                   rounded-xl
-                  px-4 pt-5 pb-2
+
+                  border
+                  bg-transparent
+
+                  px-4
+                  pb-2
+                  pt-5
+
                   text-[color:var(--text)]
+
                   outline-none
-                  focus:border-[color:var(--accent)]
-                  transition
-                "
+
+                  transition-all
+                  duration-200
+
+                  placeholder:text-transparent
+
+                  ${
+                    errors.name
+                      ? `
+                        border-red-500
+                        focus:border-red-500
+                      `
+                      : `
+                        border-[color:var(--border-soft-color)]
+                        focus:border-[color:var(--brand-accent)]
+                      `
+                  }
+                `}
               />
 
               <label
                 htmlFor="name"
                 className="
-                  absolute left-4 top-3
-                  text-[color:var(--muted)] text-sm
+                  pointer-events-none
+
+                  absolute
+                  left-4
+                  top-3
+
+                  text-sm
+                  text-[color:var(--muted)]
+
                   transition-all
+                  duration-200
+
                   peer-placeholder-shown:top-4
                   peer-placeholder-shown:text-base
+
                   peer-focus:top-2
                   peer-focus:text-sm
-                  peer-focus:text-[color:var(--accent)]
+
+                  peer-focus:text-[color:var(--brand-accent)]
                 "
               >
                 Your Name
               </label>
 
               {errors.name && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="mt-1 text-xs text-red-500">
                   {errors.name.message}
                 </p>
               )}
             </div>
 
-            {/* EMAIL */}
+            {/* =================================================
+                EMAIL
+            ================================================= */}
+
             <div className="relative">
               <input
                 {...register("email")}
                 id="email"
+                type="email"
                 placeholder=" "
-                className="
-                  peer w-full
-                  bg-transparent
-                  border border-[color:var(--border)]
+                autoComplete="email"
+                aria-invalid={Boolean(errors.email)}
+                className={`
+                  peer
+
+                  w-full
+
                   rounded-xl
-                  px-4 pt-5 pb-2
+
+                  border
+                  bg-transparent
+
+                  px-4
+                  pb-2
+                  pt-5
+
                   text-[color:var(--text)]
+
                   outline-none
-                  focus:border-[color:var(--accent)]
-                  transition
-                "
+
+                  transition-all
+                  duration-200
+
+                  placeholder:text-transparent
+
+                  ${
+                    errors.email
+                      ? `
+                        border-red-500
+                        focus:border-red-500
+                      `
+                      : `
+                        border-[color:var(--border-soft-color)]
+                        focus:border-[color:var(--brand-accent)]
+                      `
+                  }
+                `}
               />
 
               <label
                 htmlFor="email"
                 className="
-                  absolute left-4 top-3
-                  text-[color:var(--muted)] text-sm
+                  pointer-events-none
+
+                  absolute
+                  left-4
+                  top-3
+
+                  text-sm
+                  text-[color:var(--muted)]
+
                   transition-all
+                  duration-200
+
                   peer-placeholder-shown:top-4
                   peer-placeholder-shown:text-base
+
                   peer-focus:top-2
                   peer-focus:text-sm
-                  peer-focus:text-[color:var(--accent)]
+
+                  peer-focus:text-[color:var(--brand-accent)]
                 "
               >
                 Email Address
               </label>
 
               {errors.email && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="mt-1 text-xs text-red-500">
                   {errors.email.message}
                 </p>
               )}
             </div>
 
-            {/* MESSAGE */}
+            {/* =================================================
+                MESSAGE
+            ================================================= */}
+
             <div className="relative">
               <textarea
                 {...register("message")}
                 id="message"
                 rows={5}
                 placeholder=" "
-                className="
-                  peer w-full
-                  bg-transparent
-                  border border-[color:var(--border)]
-                  rounded-xl
-                  px-4 pt-5 pb-2
-                  text-[color:var(--text)]
-                  outline-none
+                aria-invalid={Boolean(errors.message)}
+                className={`
+                  peer
+
+                  w-full
+
                   resize-none
-                  focus:border-[color:var(--accent)]
-                  transition
-                "
+                  rounded-xl
+
+                  border
+                  bg-transparent
+
+                  px-4
+                  pb-2
+                  pt-5
+
+                  text-[color:var(--text)]
+
+                  outline-none
+
+                  transition-all
+                  duration-200
+
+                  placeholder:text-transparent
+
+                  ${
+                    errors.message
+                      ? `
+                        border-red-500
+                        focus:border-red-500
+                      `
+                      : `
+                        border-[color:var(--border-soft-color)]
+                        focus:border-[color:var(--brand-accent)]
+                      `
+                  }
+                `}
               />
 
               <label
                 htmlFor="message"
                 className="
-                  absolute left-4 top-3
-                  text-[color:var(--muted)] text-sm
+                  pointer-events-none
+
+                  absolute
+                  left-4
+                  top-3
+
+                  text-sm
+                  text-[color:var(--muted)]
+
                   transition-all
+                  duration-200
+
                   peer-placeholder-shown:top-4
                   peer-placeholder-shown:text-base
+
                   peer-focus:top-2
                   peer-focus:text-sm
-                  peer-focus:text-[color:var(--accent)]
+
+                  peer-focus:text-[color:var(--brand-accent)]
                 "
               >
                 Your Message
               </label>
 
               {errors.message && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="mt-1 text-xs text-red-500">
                   {errors.message.message}
                 </p>
               )}
             </div>
 
-            {/* BUTTON */}
+            {/* =================================================
+                BUTTON
+            ================================================= */}
+
             <motion.button
               type="submit"
               disabled={loading}
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={
+                !loading
+                  ? {
+                      scale: 1.02,
+                      y: -1,
+                    }
+                  : undefined
+              }
+              whileTap={
+                !loading
+                  ? {
+                      scale: 0.97,
+                    }
+                  : undefined
+              }
               className="
                 w-full
-                py-3
+
                 rounded-xl
+
+                bg-[color:var(--brand-accent)]
+
+                py-3
+
                 font-semibold
-                bg-[color:var(--accent)]
-                text-[color:var(--bg)]
+                text-white
+
+                shadow-sm
+
                 transition-all
+                duration-200
+
+                hover:bg-[color:var(--brand-accent-hover)]
+                hover:shadow-md
+
+                disabled:cursor-not-allowed
                 disabled:opacity-50
               "
             >
               {loading ? "Sending..." : "Send Message"}
             </motion.button>
 
-            {/* SUCCESS */}
+            {/* =================================================
+                SUCCESS
+            ================================================= */}
+
             {success && (
               <motion.p
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-[color:var(--accent)] text-center text-sm"
+                initial={{
+                  opacity: 0,
+                  y: 5,
+                }}
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                className="
+                  text-center
+                  text-sm
+                  font-medium
+
+                  text-[color:var(--brand-accent)]
+                "
               >
                 Message sent successfully
               </motion.p>
             )}
           </form>
 
-          {/* SOCIAL ICONS */}
-          <div className="flex flex-wrap justify-center gap-6 mt-8 md:mt-10 text-2xl text-[color:var(--muted)]">
-            <Mail className="hover:text-[color:var(--accent)] transition cursor-pointer" />
-            <FaGithub className="hover:text-[color:var(--accent)] transition cursor-pointer" />
-            <FaLinkedin className="hover:text-[color:var(--accent)] transition cursor-pointer" />
+          {/* =====================================================
+              SOCIAL LINKS
+          ===================================================== */}
+
+          <div
+            className="
+              mt-8
+
+              flex
+              flex-wrap
+              justify-center
+              gap-6
+
+              text-2xl
+              text-[color:var(--muted)]
+
+              md:mt-10
+            "
+          >
+            {/* EMAIL */}
+
+            <a
+              href="mailto:your@email.com"
+              aria-label="Email"
+              className="
+                transition-all
+                duration-200
+
+                hover:-translate-y-1
+                hover:text-[color:var(--brand-accent)]
+              "
+            >
+              <Mail />
+            </a>
+
+            {/* GITHUB */}
+
+            <a
+              href="https://github.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub"
+              className="
+                transition-all
+                duration-200
+
+                hover:-translate-y-1
+                hover:text-[color:var(--brand-accent)]
+              "
+            >
+              <FaGithub />
+            </a>
+
+            {/* LINKEDIN */}
+
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="LinkedIn"
+              className="
+                transition-all
+                duration-200
+
+                hover:-translate-y-1
+                hover:text-[color:var(--brand-accent)]
+              "
+            >
+              <FaLinkedin />
+            </a>
           </div>
         </div>
       </motion.div>
