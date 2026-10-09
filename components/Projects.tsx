@@ -4,11 +4,31 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
 import { projects, type Project } from "@/constants/projects";
-import ProjectCard from "@/components/ProjectCard";
 import ProjectModal from "@/components/ProjectModal";
 import ProjectDrawer from "./ProjectDrawer";
+import FlexCarousel, { type FlexCarouselItem } from "@/components/FlexCarousel";
+import MobileProjectCarousel from "@/components/MobileProjectCarousel";
 
 const featuredProjects = projects.slice(0, 3);
+
+const carouselItems: FlexCarouselItem[] = projects.flatMap((project) =>
+  (project.media ?? []).flatMap((media) => {
+    // Images can render directly in the WebGL carousel.
+    // Videos need a poster image to be displayed here.
+    const src = media.type === "image" ? media.src : media.poster;
+
+    if (!src) return [];
+
+    return [
+      {
+        src,
+        alt: media.alt ?? project.title,
+        title: project.title,
+        subtitle: media.type === "video" ? "Video preview" : "Featured work",
+      },
+    ];
+  }),
+);
 
 export default function Projects() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -95,7 +115,6 @@ export default function Projects() {
           {/* =================================================
               TITLE
           ================================================= */}
-
           <div>
             <h2
               className="
@@ -129,37 +148,32 @@ export default function Projects() {
               I&apos;VE BUILT
             </h2>
           </div>
-
           {/* =================================================
-              PROJECT GRID
+              FEATURED MEDIA CAROUSEL
           ================================================= */}
-
-          <div
-            className="
-              mt-10
-              grid
-              grid-cols-1
-              gap-5
-
-              sm:grid-cols-2
-              lg:grid-cols-3
-
-              md:mt-14
-            "
-          >
-            {featuredProjects.map((project) => (
-              <ProjectCard
-                key={project.title}
-                project={project}
-                onOpen={(project) => setSelectedProject(project)}
-              />
-            ))}
+          {/* Mobile: Simple Auto Carousel */}
+          <div className="mt-6 md:hidden">
+            <MobileProjectCarousel items={carouselItems} />
           </div>
-
+          {/* Desktop: Existing Flex Carousel */}
+          <div className="mt-8 hidden md:block md:mt-12">
+            <FlexCarousel
+              items={carouselItems}
+              preset="liquid"
+              intro="rise"
+              cardHeight={0.58}
+              gap={18}
+              radius={14}
+              fit="landscape"
+              captions
+              focusOnClick={false}
+              autoplay={false}
+              className="h-[480px] w-full lg:h-[540px]"
+            />
+          </div>
           {/* =================================================
               SEE MORE BUTTON
           ================================================= */}
-
           <div className="mt-8 flex justify-stretch sm:justify-end md:mt-10">
             <motion.button
               type="button"

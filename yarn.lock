@@ -4836,6 +4836,7 @@ __metadata:
     lucide-react: ^1.17.0
     next: 16.2.7
     next-themes: ^0.4.6
+    ogl: ^1.0.11
     react: 19.2.4
     react-dom: 19.2.4
     react-hook-form: ^7.77.0
@@ -5078,6 +5079,13 @@ __metadata:
     define-properties: ^1.2.1
     es-object-atoms: ^1.0.0
   checksum: f9b9a2a125ccf8ded29414d7c056ae0d187b833ee74919821fc60d7e216626db220d9cb3cf33f965c84aaaa96133626ca13b80f3c158b673976dc8cfcfcd26bb
+  languageName: node
+  linkType: hard
+
+"ogl@npm:^1.0.11":
+  version: 1.0.11
+  resolution: "ogl@npm:1.0.11"
+  checksum: 00c596ea6755dfb1236f0b754c4434fff01873c0677230a24b6ffe9f31d5ca27ea3bc6363a140c827510327f7c2e823b0711f40cb52864182b58bea95806db4e
   languageName: node
   linkType: hard
 
