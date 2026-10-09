@@ -193,3 +193,19 @@ html.lenis body {
     @apply font-sans;
   }
 }
+
+
+@theme {
+  --animate-testimonial-scroll: testimonial-scroll 35s linear infinite;
+}
+
+@keyframes testimonial-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - 10px));
+  }
+}
+

@@ -1,3 +1,10 @@
+export type ProjectMedia = {
+  type: "image" | "video";
+  src: string;
+  alt?: string;
+  poster?: string;
+};
+
 export type Project = {
   id: string;
   title: string;
@@ -5,167 +12,87 @@ export type Project = {
   date?: string;
   jobType?: string;
   image: string[];
-
+  media?: ProjectMedia[];
   features?: string[];
   liveUrl?: string;
-
   stack?: string[];
-
   hasModal?: boolean;
 };
 
+const photoIds = [
+  "photo-1470770841072-f978cf4d019e",
+  "photo-1500530855697-b586d89ba3ee",
+  "photo-1470252649378-9c29740c9fa8",
+  "photo-1472214103451-9374bd1c798e",
+  "photo-1501785888041-af3ef285b470",
+  "photo-1464822759023-fed622ff2c3b",
+  "photo-1441974231531-c6227db76b6e",
+  "photo-1472396961693-142e6e269027",
+  "photo-1500534623283-312aade485b7",
+  "photo-1469474968028-56623f02e42e",
+  "photo-1490750967868-88aa4486c946",
+  "photo-1490730141103-6cac27aaab94",
+  "photo-1518837695005-2083093ee35b",
+  "photo-1507525428034-b723cf961d3e",
+  "photo-1519681393784-d120267933ba",
+  "photo-1500534314209-a25ddb2bd429",
+  "photo-1511497584788-876760111969",
+  "photo-1518005020951-eccb494ad742",
+  "photo-1487958449943-2429e8be8625",
+  "photo-1511818966892-d7d671e672a2",
+  "photo-1497366754035-f200968a6e72",
+  "photo-1497366216548-37526070297c",
+  "photo-1497366811353-6870744d04b2",
+  "photo-1497366754035-f200968a6e72",
+  "photo-1517248135467-4c7edcad34c4",
+  "photo-1519608487953-e999c86e7455",
+  "photo-1500534314209-a25ddb2bd429",
+  "photo-1518837695005-2083093ee35b",
+  "photo-1490750967868-88aa4486c946",
+  "photo-1470252649378-9c29740c9fa8",
+  "photo-1506794778202-cad84cf45f1d",
+  "photo-1500648767791-00dcc994a43e",
+  "photo-1507003211169-0a1dd7228f2d",
+  "photo-1534528741775-53994a69daeb",
+  "photo-1524504388940-b1c1722653e1",
+  "photo-1531123897727-8f129e1688ce",
+  "photo-1529139574466-a303027c1d8b",
+  "photo-1515886657613-9f3515b0c78f",
+  "photo-1483985988355-763728e1935b",
+  "photo-1529139574466-a303027c1d8b",
+  "photo-1494438639946-1ebd1d20bf85",
+  "photo-1445116572660-236099ec97a0",
+  "photo-1501339847302-ac426a4a7cbb",
+  "photo-1495474472287-4d71bcdd2085",
+  "photo-1517248135467-4c7edcad34c4",
+  "photo-1519608487953-e999c86e7455",
+  "photo-1519681393784-d120267933ba",
+  "photo-1501785888041-af3ef285b470",
+  "photo-1464822759023-fed622ff2c3b",
+  "photo-1470770841072-f978cf4d019e",
+];
+
+const photographyMedia: ProjectMedia[] = photoIds.map((photoId, index) => ({
+  type: "image",
+  src: `https://images.unsplash.com/${photoId}?auto=format&fit=crop&w=1400&q=80`,
+  alt: `Photography sample ${index + 1}`,
+}));
+
 export const projects: Project[] = [
   {
-    id: "brp",
-    title: "Beurs Resource Projector (BRP)",
-    description: "Smart hub for project and resource control.",
+    id: "photography",
+    title: "Photography",
+    description:
+      "A curated visual collection capturing moments, perspectives, and stories through photography.",
     date: "2025-Present",
     jobType: "Full-Time",
-    image: ["/BRP/brp-1.png", "/BRP/brp-2.png", "/BRP/brp-3.png"],
+
+    // Keep compatibility with existing components.
+    image: photographyMedia.map((item) => item.src),
+
+    // 50 sample gallery images.
+    media: photographyMedia,
+
     hasModal: true,
-    stack: [
-      "Next.js",
-      "TypeScript",
-      "TailwindCSS",
-      "PayloadCMS",
-      "PostgreSQL",
-      "Docker",
-      "React",
-    ],
-  },
-  {
-    id: "mdt",
-    title: "Master Data Tool (MDT)",
-    description:
-      "Web system for logging, tracking, and managing incident reports in real-time.",
-    date: "2025",
-    jobType: "Full-Time",
-    image: ["/MDT/mdt-1.png", "/MDT/mdt-2.jpeg", "/MDT/mdt-3.jpeg"],
-    hasModal: true,
-    stack: [
-      "Next.js",
-      "RedwoodJS",
-      "TypeScript",
-      "TailwindCSS",
-      "GraphQL",
-      "PostgreSQL",
-      "Docker",
-      "React",
-    ],
-  },
-  {
-    id: "hris",
-    title: "Human Resources Information System (HRIS)",
-    description: "Comprehensive HR management platform.",
-    date: "2025",
-    jobType: "Full-Time",
-    image: ["/HRIS/hris-2.jpeg", "/HRIS/hris-1.jpeg", "/HRIS/hris-3.png"],
-    hasModal: true,
-    stack: [
-      "Next.js",
-      "RedwoodJS",
-      "TypeScript",
-      "TailwindCSS",
-      "GraphQL",
-      "PostgreSQL",
-      "React",
-    ],
-  },
-  {
-    id: "pepsi",
-    title: "Pepsi Philippines",
-    description: "E-commerce platform for Pepsi products in the Philippines.",
-    date: "2023-2024",
-    jobType: "Full-Time",
-    image: ["/Pepsi/pep-1.png", "/Pepsi/pep-2.png", "/Pepsi/pep-3.png"],
-    hasModal: true,
-    stack: ["Php", "Laravel", "Javascript", "MySQL", "Docker"],
-  },
-  {
-    id: "hertz",
-    title: "Hertz Philippines",
-    description: "Car rental booking system for Hertz Philippines.",
-    date: "2023",
-    jobType: "Full-Time",
-    image: ["/Hertz/hertz-1.png", "/Hertz/hertz-2.png", "/Hertz/hertz-3.png"],
-    hasModal: true,
-    stack: ["Php", "Javascript", "Jquery", "Laravel", "MySQL"],
-  },
-  // {
-  //   title: "Ringing-SuiteCRM",
-  //   description: "Headless CMS built with PHP and REST API.",
-  //   date: "2022",
-  //   jobType: "Full-Time'",
-  //   image: ["/no-preview.png"],
-  // },
-  // {
-  //   title: "OSTracker",
-  //   description:
-  //     "Time tracking and project management tool built with PHP and Laravel.",
-  //   date: "2022",
-  //   jobType: "Full-Time'",
-  //   image: ["/no-preview.png"],
-  // },
-  // {
-  //   title: "Bangihan ni Kuya",
-  //   description: "Restaurant website built with wordpress.",
-  //   date: "2023",
-  //   jobType: "Full-Time'",
-  //   image: ["/no-preview.png"],
-  // },
-  {
-    id: "qms",
-    title: "Qualicare Medical Clinic",
-    description:
-      "Medical clinic management system built with PHP and REST API.",
-    date: "2023",
-    jobType: "Freelance",
-    image: ["/QMS/qms-1.png", "/QMS/qms-2.png", "/QMS/qms-3.png"],
-    hasModal: true,
-    stack: ["Php", "Javascript", "Jquery", "MySQL"],
-  },
-  // {
-  //   title: "Outsoar Website",
-  //   description: "Official website for Outsoar company.",
-  //   date: "2022",
-  //   jobType: "Full-Time'",
-  //   image: ["/no-preview.png"],
-  // },
-  // {
-  //   title: "Ross Sneaker'",
-  //   description: "Official website for Ross Sneaker.",
-  //   date: "2025",
-  //   jobType: "Full-Time'",
-  //   image: ["/no-preview.png"],
-  // },
-  {
-    id: "MediSync",
-    title: "MediSync",
-    description:
-      "A digital appointment system that helps healthcare facilities manage patients, consultations, schedules, and provider assignments in one secure and organized platform.",
-    date: "2026",
-    jobType: "Freelance",
-    image: [
-      "/medisync/med-1.png",
-      "/medisync/med-2.png",
-      "/medisync/med-3.png",
-    ],
-    hasModal: true,
-    stack: ["Next.js", "TypeScript", "TailwindCSS", "React", "Supabase"],
-  },
-  {
-    id: "RossSneaker",
-    title: "Ross Sneaker",
-    description:
-      "A digital appointment system that helps healthcare facilities manage patients, consultations, schedules, and provider assignments in one secure and organized platform.",
-    date: "2026",
-    jobType: "Freelance",
-    image: [
-      "/medisync/med-1.png",
-      "/medisync/med-2.png",
-      "/medisync/med-3.png",
-    ],
-    hasModal: true,
-    stack: ["Next.js", "TypeScript", "TailwindCSS", "React", "Supabase"],
   },
 ];

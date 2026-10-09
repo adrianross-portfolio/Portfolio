@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ExternalLink, Play, Image as ImageIcon, Film } from "lucide-react";
 
 import {
   SiNextdotjs,
@@ -24,18 +25,13 @@ import {
   SiSupabase,
 } from "react-icons/si";
 
-import type { Project } from "@/constants/projects";
-import { useEffect, useState } from "react";
+import type { Project, ProjectMedia } from "@/constants/projects";
 import type { ReactElement } from "react";
 
 type Props = {
   project: Project | null;
   onClose: () => void;
 };
-
-/* =========================================================
-   STACK ICONS
-========================================================= */
 
 const stackIcons: Record<string, ReactElement> = {
   "Next.js": <SiNextdotjs size={14} />,
@@ -59,48 +55,42 @@ const stackIcons: Record<string, ReactElement> = {
 };
 
 export default function ProjectModal({ project, onClose }: Props) {
-  const [currentImage, setCurrentImage] = useState(0);
+  const [selectedMedia, setSelectedMedia] = useState<ProjectMedia | null>(null);
 
-  /* =========================================================
-     LOCK BODY SCROLL
-  ========================================================= */
+  const media: ProjectMedia[] = !project
+    ? []
+    : project.media?.length
+      ? project.media
+      : (project.image ?? []).map((src, index) => ({
+          type: "image" as const,
+          src,
+          alt: `${project.title} preview ${index + 1}`,
+        }));
 
+  // Lock body scroll while the project drawer is open.
   useEffect(() => {
     if (!project) return;
 
-    const originalOverflow = document.body.style.overflow;
-
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-
-    setCurrentImage(0);
+    setSelectedMedia(null);
 
     return () => {
-      document.body.style.overflow = originalOverflow;
+      document.body.style.overflow = previousOverflow;
     };
   }, [project]);
 
-  /* =========================================================
-     KEYBOARD CONTROLS
-  ========================================================= */
-
+  // Escape closes the media preview first, then the project drawer.
   useEffect(() => {
     if (!project) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        onClose();
-      }
-
-      if (event.key === "ArrowLeft" && project.image?.length > 1) {
-        setCurrentImage((prev) =>
-          prev === 0 ? project.image.length - 1 : prev - 1,
-        );
-      }
-
-      if (event.key === "ArrowRight" && project.image?.length > 1) {
-        setCurrentImage((prev) =>
-          prev === project.image.length - 1 ? 0 : prev + 1,
-        );
+        if (selectedMedia) {
+          setSelectedMedia(null);
+        } else {
+          onClose();
+        }
       }
     };
 
@@ -109,537 +99,275 @@ export default function ProjectModal({ project, onClose }: Props) {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [project, onClose]);
+  }, [project, selectedMedia, onClose]);
 
   return (
     <AnimatePresence>
       {project && (
         <>
-          {/* =================================================
-              BACKDROP
-          ================================================= */}
-
+          {/* Backdrop */}
           <motion.div
-            className="
-              fixed
-              inset-0
-              z-[9998]
-
-              h-full
-
-              bg-black/50
-              backdrop-blur-md
-            "
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
-            }}
+            className="fixed inset-0 z-[9998] h-[100dvh] w-screen bg-black/50 backdrop-blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
             onClick={onClose}
           />
 
-          {/* =================================================
-              STAGE
-          ================================================= */}
-
+          {/* Project drawer */}
           <motion.div
             className="
               fixed
-              inset-0
+              inset-x-1
+              top-1
               z-[9999]
-
               flex
-              items-end
-              justify-center
-
-              sm:items-center
-
-              p-0
-              sm:p-4
-
-              pt-[env(safe-area-inset-top)]
-              pb-[env(safe-area-inset-bottom)]
+              h-[calc(100dvh-0.5rem)]
+              flex-col
+              overflow-hidden
+              sm:inset-x-2
+              sm:top-2
+              sm:h-[calc(100dvh-1rem)]
             "
-            initial={{
-              opacity: 0,
-            }}
-            animate={{
-              opacity: 1,
-            }}
-            exit={{
-              opacity: 0,
+            initial={{ y: "-100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-100%" }}
+            transition={{
+              type: "spring",
+              stiffness: 140,
+              damping: 20,
             }}
           >
-            {/* =================================================
-                CLOSE BUTTON
-            ================================================= */}
-
-            <button
-              type="button"
-              aria-label="Close modal"
-              onClick={onClose}
-              className="
-                absolute
-
-                right-4
-                top-[calc(env(safe-area-inset-top)+12px)]
-
-                z-[100]
-
-                flex
-                h-12
-                w-12
-                items-center
-                justify-center
-
-                rounded-full
-
-                border
-                border-white/10
-
-                bg-black/60
-
-                text-white
-
-                shadow-lg
-                backdrop-blur-md
-
-                transition-all
-                duration-200
-
-                hover:bg-[color:var(--brand-accent)]
-                hover:border-[color:var(--brand-accent)]
-
-                active:scale-95
-              "
-            >
-              <X size={22} />
-            </button>
-
-            {/* =================================================
-                MODAL
-            ================================================= */}
-
-            <motion.div
+            <motion.section
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-modal-title"
               className="
                 relative
-
                 flex
+                h-full
+                min-h-0
                 w-full
                 flex-col
-
                 overflow-hidden
-
-                rounded-none
-
+                rounded-2xl
                 border
                 border-[color:var(--border-soft-color)]
-
                 bg-[color:var(--surface)]
-
                 shadow-2xl
-
-                pt-16
-
-                backdrop-blur-2xl
-
-                h-[100dvh]
-
-                sm:h-auto
-                sm:min-h-[80vh]
-                sm:max-h-[92vh]
-                sm:w-[95vw]
-                sm:max-w-5xl
-                sm:rounded-3xl
-                sm:pt-0
-
-                transition-colors
-                duration-300
               "
-              initial={{
-                scale: 0.96,
-                opacity: 0,
-              }}
-              animate={{
-                scale: 1,
-                opacity: 1,
-              }}
-              exit={{
-                scale: 0.96,
-                opacity: 0,
-              }}
+              initial={{ opacity: 0.9 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0.9 }}
+              transition={{ duration: 0.2 }}
+              onClick={(event) => event.stopPropagation()}
             >
-              {/* =================================================
-                  IMAGE
-              ================================================= */}
+              {/* Header */}
+              <header className="flex shrink-0 items-start justify-between gap-4 border-b border-[color:var(--border-soft-color)] px-5 py-5 sm:px-6">
+                <div className="min-w-0">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-[color:var(--brand-accent)]">
+                    Project Showcase
+                  </p>
 
-              <div
-                className="
-                  relative
-                  flex-[0.45]
-                  overflow-hidden
-
-                  sm:flex-[0.55]
-                "
-              >
-                {project.image?.length > 0 && (
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      draggable={false}
-                      key={currentImage}
-                      src={project.image[currentImage]}
-                      alt={project.title}
-                      className="
-                        h-full
-                        w-full
-                        object-cover
-                      "
-                      initial={{
-                        opacity: 0,
-                        scale: 1.03,
-                      }}
-                      animate={{
-                        opacity: 1,
-                        scale: 1,
-                      }}
-                      exit={{
-                        opacity: 0,
-                        scale: 0.98,
-                      }}
-                      transition={{
-                        duration: 0.25,
-                      }}
-                    />
-                  </AnimatePresence>
-                )}
-
-                {/* IMAGE OVERLAY */}
-
-                <div
-                  className="
-                    absolute
-                    inset-0
-
-                    bg-gradient-to-t
-                    from-black/60
-                    via-black/10
-                    to-transparent
-                  "
-                />
-
-                {/* =================================================
-                    PREVIOUS
-                ================================================= */}
-
-                {project.image?.length > 1 && (
-                  <button
-                    type="button"
-                    aria-label="Previous image"
-                    onClick={() =>
-                      setCurrentImage(
-                        currentImage === 0
-                          ? project.image.length - 1
-                          : currentImage - 1,
-                      )
-                    }
-                    className="
-                      absolute
-                      left-2
-                      top-1/2
-
-                      flex
-                      h-8
-                      w-8
-                      -translate-y-1/2
-                      items-center
-                      justify-center
-
-                      rounded-full
-
-                      border
-                      border-white/10
-
-                      bg-black/30
-
-                      text-white
-
-                      backdrop-blur-md
-
-                      transition-all
-                      duration-200
-
-                      hover:bg-[color:var(--brand-accent)]
-
-                      sm:left-4
-                      sm:h-10
-                      sm:w-10
-                    "
+                  <h2
+                    id="project-modal-title"
+                    className="text-2xl font-bold tracking-tight text-[color:var(--text)] sm:text-3xl"
                   >
-                    <ChevronLeft size={18} />
-                  </button>
-                )}
+                    {project.title}
+                  </h2>
 
-                {/* =================================================
-                    NEXT
-                ================================================= */}
-
-                {project.image?.length > 1 && (
-                  <button
-                    type="button"
-                    aria-label="Next image"
-                    onClick={() =>
-                      setCurrentImage(
-                        currentImage === project.image.length - 1
-                          ? 0
-                          : currentImage + 1,
-                      )
-                    }
-                    className="
-                      absolute
-                      right-2
-                      top-1/2
-
-                      flex
-                      h-8
-                      w-8
-                      -translate-y-1/2
-                      items-center
-                      justify-center
-
-                      rounded-full
-
-                      border
-                      border-white/10
-
-                      bg-black/30
-
-                      text-white
-
-                      backdrop-blur-md
-
-                      transition-all
-                      duration-200
-
-                      hover:bg-[color:var(--brand-accent)]
-
-                      sm:right-4
-                      sm:h-10
-                      sm:w-10
-                    "
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                )}
-
-                {/* =================================================
-                    DOTS
-                ================================================= */}
-
-                {project.image?.length > 1 && (
-                  <div
-                    className="
-                      absolute
-                      bottom-3
-                      left-1/2
-
-                      flex
-                      -translate-x-1/2
-                      gap-2
-                    "
-                  >
-                    {project.image.map((_, index) => (
-                      <button
-                        type="button"
-                        key={index}
-                        aria-label={`Go to image ${index + 1}`}
-                        onClick={() => setCurrentImage(index)}
-                        className={`
-                          h-2
-                          rounded-full
-
-                          transition-all
-                          duration-200
-
-                          ${
-                            currentImage === index
-                              ? "w-6 bg-white"
-                              : "w-2 bg-white/50 hover:bg-white/80"
-                          }
-                        `}
-                      />
-                    ))}
+                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-[color:var(--muted)] sm:text-sm">
+                    {project.date && <span>{project.date}</span>}
+                    {project.date && project.jobType && <span>·</span>}
+                    {project.jobType && <span>{project.jobType}</span>}
                   </div>
-                )}
-              </div>
-
-              {/* =================================================
-                  CONTENT
-              ================================================= */}
-
-              <div
-                className="
-                  flex-1
-                  overflow-y-auto
-
-                  p-4
-
-                  sm:p-8
-                "
-              >
-                {/* TITLE */}
-
-                <h2
-                  className="
-                    text-xl
-                    font-bold
-                    tracking-tight
-
-                    text-[color:var(--text)]
-
-                    sm:text-3xl
-                  "
-                >
-                  {project.title}
-                </h2>
-
-                {/* META */}
-
-                <div
-                  className="
-                    mt-2
-
-                    flex
-                    gap-2
-
-                    text-xs
-                    text-[color:var(--text)]
-
-                    sm:text-sm
-                  "
-                >
-                  {project.date && <span>{project.date}</span>}
-
-                  {project.date && project.jobType && <span>•</span>}
-
-                  {project.jobType && <span>{project.jobType}</span>}
                 </div>
 
-                {/* =================================================
-                    STACK
-                ================================================= */}
-
-                {project.stack?.length > 0 && (
-                  <div
-                    className="
-                      mt-4
-
-                      flex
-                      flex-wrap
-                      gap-2
-                    "
-                  >
-                    {project.stack.map((tech) => (
-                      <div
-                        key={tech}
-                        className="
-                          flex
-                          items-center
-                          gap-2
-
-                          rounded-full
-
-                          border
-                          border-[color:var(--border-soft-color)]
-
-                          bg-[color:var(--bg)]
-
-                          px-3
-                          py-1.5
-
-                          text-xs
-                          text-[color:var(--text)]
-
-                          transition-all
-                          duration-200
-
-                          hover:border-[color:var(--brand-accent)]
-                          hover:bg-[color:var(--brand-accent-soft)]
-                          hover:text-[color:var(--brand-accent)]
-                        "
-                      >
-                        {stackIcons[tech]}
-
-                        <span>{tech}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* DESCRIPTION */}
-
-                <p
+                <button
+                  type="button"
+                  aria-label="Close project"
+                  onClick={onClose}
                   className="
-                    mt-6
-
-                    text-sm
-                    leading-relaxed
-
-                    text-[color:var(--text)]
-
-                    sm:text-base
+                    flex size-10 shrink-0 items-center justify-center
+                    rounded-lg
+                    border border-[color:var(--border-soft-color)]
+                    text-[color:var(--muted)]
+                    transition-colors
+                    hover:border-[color:var(--brand-accent)]
+                    hover:bg-[color:var(--brand-accent-soft)]
+                    hover:text-[color:var(--brand-accent)]
+                    active:scale-95
                   "
                 >
-                  {project.description}
-                </p>
+                  <X size={20} />
+                </button>
+              </header>
 
-                {/* =================================================
-                    LIVE URL
-                ================================================= */}
+              {/* Scrollable content */}
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 sm:p-6 lg:p-8">
+                {/* Media gallery */}
+                <section>
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <div>
+                      <h3 className="text-sm font-semibold text-[color:var(--text)] sm:text-base">
+                        Project Files
+                      </h3>
+                      <p className="mt-1 text-xs text-[color:var(--muted)]">
+                        Select an item to preview
+                      </p>
+                    </div>
 
-                {project.liveUrl && (
-                  <div className="mt-6">
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="
-                        inline-flex
-                        items-center
-                        gap-2
-
-                        rounded-xl
-
-                        bg-[color:var(--brand-accent)]
-
-                        px-4
-                        py-2
-
-                        font-medium
-                        text-white
-
-                        shadow-sm
-
-                        transition-all
-                        duration-200
-
-                        hover:bg-[color:var(--brand-accent-hover)]
-                        hover:scale-[1.02]
-
-                        active:scale-[0.98]
-                      "
-                    >
-                      <ExternalLink size={16} />
-                      View Live
-                    </a>
+                    <span className="rounded-full border border-[color:var(--border-soft-color)] px-3 py-1 text-xs text-[color:var(--muted)]">
+                      {media.length} {media.length === 1 ? "item" : "items"}
+                    </span>
                   </div>
-                )}
+
+                  {media.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {media.map((item, index) => (
+                        <motion.button
+                          key={`${item.src}-${index}`}
+                          type="button"
+                          onClick={() => setSelectedMedia(item)}
+                          whileHover={{ y: -3 }}
+                          whileTap={{ scale: 0.99 }}
+                          className="
+                            group overflow-hidden rounded-xl
+                            border border-[color:var(--border-soft-color)]
+                            bg-[color:var(--bg)] text-left
+                            transition-colors
+                            hover:border-[color:var(--brand-accent)]
+                            focus-visible:outline-2
+                            focus-visible:outline-offset-2
+                            focus-visible:outline-[color:var(--brand-accent)]
+                          "
+                          aria-label={`Preview ${item.alt || `${project.title} file ${index + 1}`}`}
+                        >
+                          <div className="relative aspect-video overflow-hidden">
+                            {item.type === "video" ? (
+                              <video
+                                src={item.src}
+                                poster={item.poster}
+                                preload="metadata"
+                                muted
+                                playsInline
+                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                            ) : (
+                              <img
+                                src={item.src}
+                                alt={
+                                  item.alt ||
+                                  `${project.title} preview ${index + 1}`
+                                }
+                                loading="lazy"
+                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                              />
+                            )}
+
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/25">
+                              <span className="flex size-11 items-center justify-center rounded-full bg-black/60 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                                {item.type === "video" ? (
+                                  <Play size={19} fill="currentColor" />
+                                ) : (
+                                  <ImageIcon size={19} />
+                                )}
+                              </span>
+                            </div>
+
+                            <span className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-md bg-black/65 px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-white backdrop-blur-sm">
+                              {item.type === "video" ? (
+                                <Film size={12} />
+                              ) : (
+                                <ImageIcon size={12} />
+                              )}
+                              {item.type}
+                            </span>
+                          </div>
+
+                          <div className="p-3">
+                            <p className="truncate text-xs font-medium text-[color:var(--text)]">
+                              {item.alt || `Project file ${index + 1}`}
+                            </p>
+                          </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-[color:var(--border-soft-color)] text-center">
+                      <ImageIcon
+                        size={28}
+                        className="text-[color:var(--muted)]"
+                      />
+                      <p className="mt-3 text-sm text-[color:var(--muted)]">
+                        No project media added yet.
+                      </p>
+                    </div>
+                  )}
+                </section>
               </div>
-            </motion.div>
+            </motion.section>
           </motion.div>
+
+          {/* Full-size media preview */}
+          <AnimatePresence>
+            {selectedMedia && (
+              <motion.div
+                className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md sm:p-8"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedMedia(null)}
+              >
+                <button
+                  type="button"
+                  aria-label="Close media preview"
+                  onClick={() => setSelectedMedia(null)}
+                  className="
+                    absolute right-4 top-4 z-10 flex size-11 items-center
+                    justify-center rounded-full border border-white/15
+                    bg-black/50 text-white transition-colors
+                    hover:bg-[color:var(--brand-accent)]
+                  "
+                >
+                  <X size={22} />
+                </button>
+
+                <motion.div
+                  className="flex max-h-full max-w-full items-center justify-center"
+                  initial={{ scale: 0.96, y: 8 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.96, y: 8 }}
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  {selectedMedia.type === "video" ? (
+                    <video
+                      key={selectedMedia.src}
+                      src={selectedMedia.src}
+                      poster={selectedMedia.poster}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="max-h-[85dvh] max-w-full rounded-xl"
+                    />
+                  ) : (
+                    <img
+                      src={selectedMedia.src}
+                      alt={selectedMedia.alt || project.title}
+                      className="max-h-[85dvh] max-w-full rounded-xl object-contain"
+                    />
+                  )}
+                </motion.div>
+
+                {selectedMedia.alt && (
+                  <p className="absolute bottom-5 left-4 right-4 text-center text-sm text-white/75">
+                    {selectedMedia.alt}
+                  </p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </AnimatePresence>
