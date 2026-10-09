@@ -11,7 +11,7 @@ type Props = {
   open: boolean;
   onClose: () => void;
   projects: Project[];
-  onOpen: (project: Project) => void; // ✅ ADD THIS
+  onOpen: (project: Project) => void;
 };
 
 const ITEMS_PER_PAGE = 6;
@@ -24,33 +24,55 @@ export default function ProjectDrawer({
 }: Props) {
   const [page, setPage] = useState(0);
 
+  /* =========================================================
+     RESET PAGE
+  ========================================================= */
+
   useEffect(() => {
-    if (open) setPage(0);
+    if (open) {
+      setPage(0);
+    }
   }, [open]);
 
-  // lock scroll
+  /* =========================================================
+     LOCK BODY SCROLL
+  ========================================================= */
+
   useEffect(() => {
     if (!open) return;
 
-    const original = document.body.style.overflow;
+    const originalOverflow = document.body.style.overflow;
+
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow = original;
+      document.body.style.overflow = originalOverflow;
     };
   }, [open]);
 
-  // ESC close
+  /* =========================================================
+     ESCAPE TO CLOSE
+  ========================================================= */
+
   useEffect(() => {
     if (!open) return;
 
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
     };
 
     window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
   }, [open, onClose]);
+
+  /* =========================================================
+     PAGINATION
+  ========================================================= */
 
   const totalPages = Math.ceil(projects.length / ITEMS_PER_PAGE);
 
@@ -62,135 +84,222 @@ export default function ProjectDrawer({
     <AnimatePresence>
       {open && (
         <>
-          {/* BACKDROP */}
-          <motion.div
-            className="fixed inset-0 z-[999] bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
+          {/* =================================================
+              BACKDROP
+          ================================================= */}
 
-          {/* DRAWER */}
           <motion.div
             className="
               fixed
-              top-2 sm:top-4
-              left-1/2 -translate-x-1/2
+              inset-0
+              z-[999]
 
-              w-[95%] sm:w-[92%]
-              h-[90vh] sm:h-[95vh]
+              bg-black/50
+              backdrop-blur-sm
+            "
+            initial={{
+              opacity: 0,
+            }}
+            animate={{
+              opacity: 1,
+            }}
+            exit={{
+              opacity: 0,
+            }}
+            onClick={onClose}
+          />
 
+          {/* =================================================
+              DRAWER
+          ================================================= */}
+
+          <motion.div
+            className="
+              fixed
+              left-1/2
+              top-2
               z-[1000]
 
-              flex flex-col
+              flex
+              h-[calc(100vh-1rem)]
+              w-[95%]
+              -translate-x-1/2
+              flex-col
+
+              overflow-hidden
 
               rounded-2xl
 
-              min-h-0
-              border border-[color:var(--border)]
+              border
+              border-[color:var(--border-soft-color)]
 
-              bg-[color:var(--bg)]
-              dark:bg-black/40
-
-              backdrop-blur-2xl
+              bg-[color:var(--surface)]
 
               shadow-2xl
 
-              overflow-hidden
+              sm:top-4
+              sm:h-[calc(100vh-2rem)]
+              sm:w-[92%]
+
+              md:max-w-6xl
             "
-            initial={{ y: "-100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "-100%" }}
+            initial={{
+              y: "-100%",
+            }}
+            animate={{
+              y: 0,
+            }}
+            exit={{
+              y: "-100%",
+            }}
             transition={{
               type: "spring",
               stiffness: 140,
               damping: 20,
             }}
           >
-            {/* HEADER */}
+            {/* =================================================
+                HEADER
+            ================================================= */}
+
             <div
               className="
+                flex
                 h-16
-
-                flex items-center justify-between
-
-                px-4 sm:px-6
-
-                border-b border-[color:var(--border)]
-
                 shrink-0
+                items-center
+                justify-between
+
+                border-b
+                border-[color:var(--border-soft-color)]
+
+                px-4
+
+                sm:px-6
               "
             >
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-[color:var(--text)]">
+              {/* TITLE */}
+
+              <div className="min-w-0">
+                <h2
+                  className="
+                    text-xl
+                    font-black
+                    tracking-tight
+                    text-[color:var(--text)]
+
+                    sm:text-2xl
+                  "
+                >
                   PROJECTS
                 </h2>
-                <p className="text-xs sm:text-sm text-[color:var(--muted)]">
+
+                <p
+                  className="
+                    text-xs
+                    text-[color:var(--muted)]
+
+                    sm:text-sm
+                  "
+                >
                   Portfolio Showcase
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
-                {/* PAGINATION */}
+              {/* ACTIONS */}
+
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* =================================================
+                    PAGINATION
+                ================================================= */}
+
                 {totalPages > 1 && (
                   <div
                     className="
-                      flex items-center gap-1
-
-                      px-2 py-1
+                      flex
+                      items-center
+                      gap-1
 
                       rounded-lg
 
-                      bg-white/10 dark:bg-white/5
-                      backdrop-blur-md
+                      border
+                      border-[color:var(--border-soft-color)]
 
-                      border border-white/10 dark:border-white/10
+                      bg-[color:var(--bg)]
+
+                      p-1
                     "
                   >
                     <button
+                      type="button"
                       onClick={() => changePage(page - 1)}
                       disabled={page === 0}
                       className="
-                        px-3 py-1
-
                         rounded-md
 
-                        text-sm
+                        px-2.5
+                        py-1
+
+                        text-xs
+                        font-medium
                         text-[color:var(--text)]
 
-                        hover:bg-white/20
+                        transition-colors
+                        duration-200
 
-                        transition
+                        hover:bg-[color:var(--brand-accent-soft)]
+                        hover:text-[color:var(--brand-accent)]
 
-                        disabled:opacity-30
                         disabled:cursor-not-allowed
+                        disabled:opacity-30
+
+                        sm:px-3
+                        sm:text-sm
                       "
                     >
                       Prev
                     </button>
 
-                    <span className="text-xs text-[color:var(--muted)] px-2 whitespace-nowrap">
+                    <span
+                      className="
+                        whitespace-nowrap
+                        px-2
+
+                        text-[10px]
+                        font-medium
+                        text-[color:var(--muted)]
+
+                        sm:text-xs
+                      "
+                    >
                       {page + 1} / {totalPages}
                     </span>
 
                     <button
+                      type="button"
                       onClick={() => changePage(page + 1)}
                       disabled={page === totalPages - 1}
                       className="
-                        px-3 py-1
-
                         rounded-md
 
-                        text-sm
+                        px-2.5
+                        py-1
+
+                        text-xs
+                        font-medium
                         text-[color:var(--text)]
 
-                        hover:bg-white/20
+                        transition-colors
+                        duration-200
 
-                        transition
+                        hover:bg-[color:var(--brand-accent-soft)]
+                        hover:text-[color:var(--brand-accent)]
 
-                        disabled:opacity-30
                         disabled:cursor-not-allowed
+                        disabled:opacity-30
+
+                        sm:px-3
+                        sm:text-sm
                       "
                     >
                       Next
@@ -198,18 +307,32 @@ export default function ProjectDrawer({
                   </div>
                 )}
 
-                {/* CLOSE */}
+                {/* =================================================
+                    CLOSE
+                ================================================= */}
+
                 <button
+                  type="button"
                   onClick={onClose}
+                  aria-label="Close projects"
                   className="
-                    p-2 rounded-lg
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+
+                    rounded-lg
 
                     text-[color:var(--muted)]
 
-                    hover:text-[color:var(--text)]
-                    hover:bg-white/10
+                    transition-all
+                    duration-200
 
-                    transition
+                    hover:bg-[color:var(--brand-accent-soft)]
+                    hover:text-[color:var(--brand-accent)]
+
+                    active:scale-95
                   "
                 >
                   <X size={22} />
@@ -217,8 +340,11 @@ export default function ProjectDrawer({
               </div>
             </div>
 
-            {/* CAROUSEL BODY */}
-            <div className="flex-1 overflow-hidden relative">
+            {/* =================================================
+                CAROUSEL BODY
+            ================================================= */}
+
+            <div className="relative flex-1 overflow-hidden">
               <motion.div
                 className="flex h-full"
                 animate={{
@@ -230,30 +356,44 @@ export default function ProjectDrawer({
                   damping: 22,
                 }}
               >
-                {Array.from({ length: totalPages }).map((_, i) => {
+                {Array.from({
+                  length: totalPages,
+                }).map((_, index) => {
                   const pageProjects = projects.slice(
-                    i * ITEMS_PER_PAGE,
-                    i * ITEMS_PER_PAGE + ITEMS_PER_PAGE,
+                    index * ITEMS_PER_PAGE,
+                    index * ITEMS_PER_PAGE + ITEMS_PER_PAGE,
                   );
 
                   return (
                     <div
-                      key={i}
-                      className="min-w-full h-full overflow-y-auto flex justify-center items-start p-3 sm:p-6"
+                      key={index}
+                      className="
+                        flex
+                        h-full
+                        min-w-full
+                        items-start
+                        justify-center
+                        overflow-y-auto
+
+                        p-3
+
+                        sm:p-6
+                      "
                     >
                       <div
                         className="
+                          grid
                           w-full
 
-                          grid
                           grid-cols-1
+                          gap-4
+
                           sm:grid-cols-2
+                          sm:gap-6
+
                           lg:grid-cols-3
 
-                          gap-4 sm:gap-6
-
                           content-start
-                          auto-rows-max
                         "
                       >
                         {pageProjects.map((project) => (

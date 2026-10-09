@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useAnimation, useInView } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef, useState } from "react";
 
 import { projects, type Project } from "@/constants/projects";
 import ProjectCard from "@/components/ProjectCard";
@@ -11,10 +11,12 @@ import ProjectDrawer from "./ProjectDrawer";
 const featuredProjects = projects.slice(0, 3);
 
 export default function Projects() {
-  const sectionRef = useRef(null);
-  const isInView = useInView(sectionRef, { margin: "-100px" });
+  const sectionRef = useRef<HTMLElement>(null);
 
-  const controls = useAnimation();
+  const isInView = useInView(sectionRef, {
+    once: true,
+    margin: "-100px",
+  });
 
   // MODAL STATE
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -22,36 +24,39 @@ export default function Projects() {
   // DRAWER STATE
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isInView) return;
-
-    controls.set({
-      y: -50,
-      opacity: 0,
-    });
-
-    controls.start({
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    });
-  }, [isInView, controls]);
+  const overlayActive = drawerOpen || selectedProject !== null;
 
   return (
     <>
+      {/* =====================================================
+          PROJECTS SECTION
+      ===================================================== */}
+
       <motion.section
         ref={sectionRef}
         id="projects"
-        animate={controls}
+        initial={{
+          y: -50,
+          opacity: 0,
+        }}
+        animate={
+          isInView
+            ? {
+                y: 0,
+                opacity: 1,
+              }
+            : {}
+        }
+        transition={{
+          duration: 0.6,
+          ease: "easeOut",
+        }}
         className="mt-4 md:mt-6"
       >
         <motion.div
           animate={{
-            scale: drawerOpen || selectedProject ? 0.97 : 1,
-            opacity: drawerOpen || selectedProject ? 0.85 : 1,
+            scale: overlayActive ? 0.97 : 1,
+            opacity: overlayActive ? 0.85 : 1,
           }}
           transition={{
             type: "spring",
@@ -59,62 +64,134 @@ export default function Projects() {
             damping: 25,
           }}
           className="
-            relative z-10
-            min-h-auto
-            lg:min-h-[calc(100vh-5rem)]
-            max-w-7xl mx-auto
+            relative
+            z-10
+            mx-auto
+
+            min-h-[calc(100vh-5rem)]
+            max-w-7xl
+
             rounded-2xl
-            border border-[color:var(--border)]
+            border
+            border-[color:var(--border-soft-color)]
+
             bg-[color:var(--surface)]
-            backdrop-blur-md
+
+            px-5
+            py-12
+
+            sm:px-8
+            sm:py-16
+
+            md:px-12
+            md:py-20
+
+            lg:px-16
+            lg:py-24
+
             shadow-2xl
-            px-5 sm:px-8 md:px-12
-            py-12 sm:py-16 md:py-20
           "
         >
-          {/* TITLE */}
+          {/* =================================================
+              TITLE
+          ================================================= */}
+
           <div>
             <h2
-              className="font-black text-4xl sm:text-5xl md:text-7xl lg:text-8xl"
-              style={{ color: "var(--text)" }}
+              className="
+                text-4xl
+                font-black
+                tracking-tight
+                text-[color:var(--text)]
+
+                sm:text-5xl
+                md:text-7xl
+                lg:text-8xl
+              "
             >
               THINGS
             </h2>
-            <h2 className="font-black text-[color:var(--accent)] text-4xl sm:text-5xl md:text-7xl lg:text-8xl -mt-1 md:-mt-2">
+
+            <h2
+              className="
+                -mt-1
+                text-4xl
+                font-black
+                tracking-tight
+                text-[color:var(--brand-accent)]
+
+                sm:text-5xl
+                md:-mt-2
+                md:text-7xl
+                lg:text-8xl
+              "
+            >
               I&apos;VE BUILT
             </h2>
           </div>
 
-          {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-10">
+          {/* =================================================
+              PROJECT GRID
+          ================================================= */}
+
+          <div
+            className="
+              mt-10
+              grid
+              grid-cols-1
+              gap-5
+
+              sm:grid-cols-2
+              lg:grid-cols-3
+
+              md:mt-14
+            "
+          >
             {featuredProjects.map((project) => (
               <ProjectCard
                 key={project.title}
                 project={project}
-                onOpen={(p) => setSelectedProject(p)}
+                onOpen={(project) => setSelectedProject(project)}
               />
             ))}
           </div>
 
-          {/* BUTTON */}
-          <div className="mt-8 flex justify-stretch sm:justify-end">
+          {/* =================================================
+              SEE MORE BUTTON
+          ================================================= */}
+
+          <div className="mt-8 flex justify-stretch sm:justify-end md:mt-10">
             <motion.button
+              type="button"
               onClick={() => setDrawerOpen(true)}
-              className="
-                w-full sm:w-auto
-                px-8 py-3
-                rounded-lg
-                font-semibold
-                transition-all
-                shadow-sm
-                hover:shadow-md
-              "
-              style={{
-                background: "var(--accent)",
-                color: "var(--bg)", // ensures contrast in BOTH themes
+              whileHover={{
+                scale: 1.03,
+                y: -2,
               }}
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileTap={{
+                scale: 0.97,
+              }}
+              className="
+                w-full
+                rounded-lg
+
+                bg-[color:var(--brand-accent)]
+                px-8
+                py-3
+
+                font-semibold
+                text-white
+
+                shadow-sm
+
+                transition-all
+                duration-300
+
+                hover:bg-[color:var(--brand-accent-hover)]
+                hover:shadow-md
+
+                sm:w-auto
+              "
             >
               See More
             </motion.button>
@@ -122,19 +199,25 @@ export default function Projects() {
         </motion.div>
       </motion.section>
 
-      {/* MODAL (ABOVE EVERYTHING) */}
+      {/* =====================================================
+          PROJECT MODAL
+      ===================================================== */}
+
       <ProjectModal
         project={selectedProject}
         onClose={() => setSelectedProject(null)}
       />
 
-      {/* DRAWER (BEHIND MODAL WHEN BOTH OPEN) */}
-      <div className={selectedProject ? "z-[40]" : "z-[60] relative"}>
+      {/* =====================================================
+          PROJECT DRAWER
+      ===================================================== */}
+
+      <div className={selectedProject ? "relative z-[40]" : "relative z-[60]"}>
         <ProjectDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
           projects={projects}
-          onOpen={(p) => setSelectedProject(p)}
+          onOpen={(project) => setSelectedProject(project)}
         />
       </div>
     </>
