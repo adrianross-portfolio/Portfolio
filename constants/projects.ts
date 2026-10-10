@@ -78,6 +78,47 @@ const photographyMedia: ProjectMedia[] = photoIds.map((photoId, index) => ({
   alt: `Photography sample ${index + 1}`,
 }));
 
+// 20 public sample videos.
+// These are for testing the video gallery and player.
+const sampleVideoIds = [
+  "BigBuckBunny",
+  "ElephantsDream",
+  "ForBiggerBlazes",
+  "ForBiggerEscapes",
+  "ForBiggerFun",
+  "ForBiggerJoyrides",
+  "ForBiggerMeltdowns",
+  "ForBiggerMobstaz",
+  "ForBiggerPassion",
+  "ForBiggerQuestions",
+  "ForBiggerSports",
+  "ForBiggerTravel",
+  "ForBiggerWaves",
+  "ForBiggerWorld",
+  "ForBiggerCelebration",
+  "ForBiggerEntertainment",
+  "ForBiggerFamily",
+  "ForBiggerInnovation",
+  "ForBiggerNature",
+  "ForBiggerStories",
+];
+
+const photographyVideos: ProjectMedia[] = sampleVideoIds.map(
+  (videoId, index) => ({
+    type: "video",
+    src: `https://storage.googleapis.com/gtv-videos-bucket/sample/${videoId}.mp4`,
+    alt: `Sample video clip ${index + 1}`,
+  }),
+);
+
+const videoGalleryMedia: ProjectMedia[] = sampleVideoIds.map(
+  (videoId, index) => ({
+    type: "video",
+    src: `https://storage.googleapis.com/gtv-videos-bucket/sample/${videoId}.mp4`,
+    alt: `Video gallery sample ${index + 1}`,
+  }),
+);
+
 export const projects: Project[] = [
   {
     id: "photography",
@@ -85,14 +126,20 @@ export const projects: Project[] = [
     description:
       "A curated visual collection capturing moments, perspectives, and stories through photography.",
     date: "2025-Present",
-    jobType: "Full-Time",
-
-    // Keep compatibility with existing components.
+    jobType: "Personal Collection",
     image: photographyMedia.map((item) => item.src),
-
-    // 50 sample gallery images.
     media: photographyMedia,
-
+    hasModal: true,
+  },
+  {
+    id: "video-gallery",
+    title: "Video Gallery",
+    description:
+      "A curated collection of video clips exploring motion, storytelling, and visual experiences.",
+    date: "2025-Present",
+    jobType: "Personal Collection",
+    image: [],
+    media: videoGalleryMedia,
     hasModal: true,
   },
 ];

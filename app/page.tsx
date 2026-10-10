@@ -1,98 +1,115 @@
+"use client";
+
+import { useCallback, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import SideNav from "@/components/SideNav";
-import Footer from "@/components/footer";
 import BulbToggle from "@/components/BulbToggle";
 import Testimonials from "@/components/Testimonials";
+import Loader from "@/components/ui/Loader";
+import Footer from "@/components/footer";
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const handleLoaderComplete = useCallback(() => {
+    setIsLoading(false);
+  }, []);
+
   return (
-    <main
-      className="
-        min-h-screen
-        flex flex-col
-        lg:flex-row
-        text-white
-      "
-    >
-      {/* LEFT / TOP */}
-      <aside
+    <>
+      <AnimatePresence>
+        {isLoading && <Loader onComplete={handleLoaderComplete} />}
+      </AnimatePresence>
+
+      <motion.main
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isLoading ? 0 : 1 }}
+        transition={{ duration: 0.7, ease: "easeInOut" }}
         className="
-          w-full
-          lg:w-[35%]
-
-          lg:h-screen
-          lg:sticky lg:top-0
-
-          border-b lg:border-b-0
-          lg:border-r
-          border-[color:var(--border)]
-
+          min-h-screen
           flex flex-col
-          p-6 md:p-8
+          lg:flex-row
+          text-white
         "
+        style={{
+          visibility: isLoading ? "hidden" : "visible",
+        }}
       >
-        {/* NAV */}
-        <div className="flex justify-center">
-          <div className="rounded px-4 py-2">
-            <SideNav />
-          </div>
-        </div>
-
-        {/* HERO */}
-        <div
+        {/* LEFT / TOP */}
+        <aside
           className="
+            w-full
+            lg:w-[35%]
+            lg:h-screen
+            lg:sticky lg:top-0
+            border-b lg:border-b-0
+            lg:border-r
+            border-[color:var(--border)]
             flex flex-col
-            items-center
-            justify-center
-            gap-8
-
-            py-12
-            lg:flex-1
-            lg:py-0
+            p-6 md:p-8
           "
         >
-          <Hero />
-
-          {/* Mobile */}
-          <div className="fixed top-4 right-4 z-50 lg:hidden">
-            <BulbToggle />
+          {/* NAV */}
+          <div className="flex justify-center">
+            <div className="rounded px-4 py-2">
+              <SideNav />
+            </div>
           </div>
 
-          {/* Desktop */}
-          <div className="hidden lg:block rounded px-4 py-3">
-            <BulbToggle />
+          {/* HERO */}
+          <div
+            className="
+              flex flex-col
+              items-center
+              justify-center
+              gap-8
+              py-12
+              lg:flex-1
+              lg:py-0
+            "
+          >
+            <Hero />
+
+            {/* Mobile */}
+            <div className="fixed top-4 right-4 z-50 lg:hidden">
+              <BulbToggle />
+            </div>
+
+            {/* Desktop */}
+            <div className="hidden lg:block rounded px-4 py-3">
+              <BulbToggle />
+            </div>
           </div>
-        </div>
-      </aside>
+        </aside>
 
-      {/* RIGHT */}
-      <section
-        className="
-          w-full
-          lg:w-[65%]
-
-          min-h-screen
-
-          px-6
-          md:px-8
-          py-12
-
-          space-y-24
-          lg:space-y-40
-
-          pb-24
-        "
-      >
-        <About />
-        <Skills />
-        <Projects />
-        <Testimonials />
-        <Contact />
-      </section>
-    </main>
+        {/* RIGHT */}
+        <section
+          className="
+            w-full
+            lg:w-[65%]
+            min-h-screen
+            px-6
+            md:px-8
+            py-12
+            space-y-24
+            lg:space-y-40
+            pb-24
+          "
+        >
+          <About />
+          <Skills />
+          <Projects />
+          <Testimonials />
+          <Contact />
+          <Footer />
+        </section>
+      </motion.main>
+    </>
   );
 }
